@@ -32,4 +32,4 @@ Building
  - cd into that directory: `cd CSVProfilerViewer`
  - Run `npm install`
  - Run `npm run start`
- - Smurf to [http://localhost:4000/](http://localhost:4000/)
+ - Navigate to [http://localhost:4000/](http://localhost:4000/)
