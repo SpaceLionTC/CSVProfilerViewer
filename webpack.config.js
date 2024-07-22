@@ -8,8 +8,7 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 {
-                    from: path.resolve(__dirname, "html", "**/*"),
-                    context: path.resolve(__dirname, "html"),
+                    from: "./html",
                 }
 
             ],
