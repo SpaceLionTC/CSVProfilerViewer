@@ -8,8 +8,6 @@ This is a Single Page Application (SPA) written in typescript to analyze output 
 Using
 --
 
-[Use the prebuilt version](https://vegolasse.github.io/CSVProfilerViewer/) and load the page and upload a file to it. It will display the first 2000 frames in the file (due to chart.js becoming sluggish otherwise).
-
 Click on A measurement circle to add it as the rightmost frame in the analysis tables below. Clicking another frame moves the right column to the left one and adds the data to the right column.
 
 Recommended best practice...
