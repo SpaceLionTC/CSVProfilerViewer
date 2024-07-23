@@ -28,7 +28,7 @@ Enjoy!
 Building
 ===
 
- - Clone the repository: `git clone git@github.com:vegolasse/CSVProfilerViewer.git`
+ - Clone the repository: `git clone git@github.com:SpaceLionTC/CSVProfilerViewer.git`
  - cd into that directory: `cd CSVProfilerViewer`
  - Run `npm install`
  - Run `npm run start`
