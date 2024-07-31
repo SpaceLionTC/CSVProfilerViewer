@@ -69,6 +69,10 @@ let interestingStats = [
         displayName: "Skeletal Mesh Animation",
         csvName : "Exclusive/GameThread/Animation"
     },
+    {
+        displayName: "Character Movement",
+        csvName : "Exclusive/GameThread/CharacterMovement" 
+    },
 ]
 
 let tabs = [{
