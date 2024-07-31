@@ -40,7 +40,35 @@ let interestingStats = [
     {
         displayName: "VFX",
         csvName: "Exclusive/GameThread/Effects",
-    }
+    },
+    {
+        displayName: "Audio",
+        csvName: "AkComponent/GameThread/Tick",
+    },
+    {
+        displayName: "VisionGranters",
+        csvName: "VisionGranter/GameThread/Tick"
+    },
+    {
+        displayName: "Net Tick Time",
+        csvName: "GameThread/NetTickTime"
+    },
+    {
+        displayName: "Spawning",
+        csvName: "Exclusive/GameThread/ActorSpawning"
+    }, 
+    {
+        displayName: "Hero Characters",
+        csvName : "LokiHeroCharacter/GameThread/ALokiHeroCharacterTick"
+    },
+    {
+        displayName: "Skeletal Mesh Tick",
+        csvName : "SkinnedMeshComponent/GameThread/Tick"
+    },
+    {
+        displayName: "Skeletal Mesh Animation",
+        csvName : "Exclusive/GameThread/Animation"
+    },
 ]
 
 let tabs = [{
@@ -187,7 +215,7 @@ async function run()
         }
 
         interestingStatsValues.forEach((value: number[] , key: string ) => {
-            document.body.appendChild(HTML.tag("div", {}, key + "- Max " + (Math.max(...value)) + " Avg " + ( value.reduce((a, b) => a + b) / value.length)))
+            document.body.appendChild(HTML.tag("div", {}, key + "- Max(" + (Math.max(...value)) + ") Avg(" + ( value.reduce((a, b) => a + b) / value.length) + ")"))
         });
 
 
