@@ -36,6 +36,12 @@ import axios, {AxiosResponse} from "axios";
 
 const  MAX_FRAMES_TO_PROCESS: number = 60 * 3600;
 
+let interestingStats = [
+    {
+        displayName: "VFX",
+        csvName: "Exclusive/GameThread/Effects",
+    }
+]
 
 let tabs = [{
     thread:"GameThread/",
@@ -147,11 +153,29 @@ async function run()
         let perFrameKBTimeSeries : number[] = [];
         let renderThreadTimeSeries : number[] = [];
         let frameNumberLabels : number[] = [];
+        let interestingStatsValues : Map<string, number[]> = new Map<string, number[]>();
+
         for (let frameNumber = 0; frameNumber<Math.min(MAX_FRAMES_TO_PROCESS,table.data.length); ++frameNumber) {
             frameTimeSeries.push(Number.parseFloat(table.data[frameNumber]["FrameTime"]));
             gameThreadTimeSeries.push(Number.parseFloat(table.data[frameNumber]["GameThreadTime"]));
             renderThreadTimeSeries.push(Number.parseFloat(table.data[frameNumber]["RenderThreadTime"]));
             perFrameKBTimeSeries.push(Number.parseFloat(table.data[frameNumber]["FileIO/PerFrameKB"]));
+        
+            interestingStats.forEach( (interestingStat) => {
+                let value : number = Number.parseFloat(table.data[frameNumber][interestingStat.csvName]);
+                if (!isNaN(value))
+                {
+                    if (!interestingStatsValues.has(interestingStat.displayName))
+                    {
+                        let newArray: number[] = [];
+                        interestingStatsValues.set(interestingStat.displayName, newArray);
+                    }
+
+                    interestingStatsValues.get(interestingStat.displayName)!.push(value);
+                }
+
+            })
+
             let chaosTime : number = 0;
             table.meta.fields?.forEach((columnLabel) => {
                 if (columnLabel.match(/Chaos.*Worker.*/) || columnLabel.match(/Exclusive.*Physics/)) {
@@ -161,6 +185,12 @@ async function run()
             chaosTimeSeries.push(chaosTime);
             frameNumberLabels.push(frameNumber);
         }
+
+        interestingStatsValues.forEach((value: number[] , key: string ) => {
+            document.body.appendChild(HTML.tag("div", {}, key + "- Max " + (Math.max(...value)) + " Avg " + ( value.reduce((a, b) => a + b) / value.length)))
+        });
+
+
         comparisons.forEach(comparison => {comparison.setTable(table)})
         frametimeElement.setTable(table);
         miniMap.setTable(table);
