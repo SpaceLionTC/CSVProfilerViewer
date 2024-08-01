@@ -40,7 +40,7 @@ let aggregateStats = [
     {
         displayName: "Frame Time",
         addLabels: ["FrameTime"],
-        subtractLabels: []
+        subtractLabels: [],
     },
     {
         displayName: "\xa0\xa0\xa0\xa0Net Tick Time",
@@ -256,6 +256,11 @@ async function run()
         let frameNumberLabels : number[] = [];
         let aggregateStatValues : Map<string, number[]> = new Map<string, number[]>();
 
+        aggregateStats.forEach( (aggregateStat) => {
+                let newArray: number[] = [];
+                aggregateStatValues.set(aggregateStat.displayName, newArray);
+        });
+
         for (let frameNumber = 0; frameNumber<Math.min(MAX_FRAMES_TO_PROCESS,table.data.length); ++frameNumber) {
             frameTimeSeries.push(Number.parseFloat(table.data[frameNumber]["FrameTime"]));
             gameThreadTimeSeries.push(Number.parseFloat(table.data[frameNumber]["GameThreadTime"]));
@@ -287,12 +292,6 @@ async function run()
 
                 if (hasValidAggregate)
                 {
-                    if (!aggregateStatValues.has(aggregateStat.displayName))
-                    {
-                        let newArray: number[] = [];
-                        aggregateStatValues.set(aggregateStat.displayName, newArray);
-                    }
-
                     aggregateStatValues.get(aggregateStat.displayName)!.push(aggregateValue);
                 }
             })
