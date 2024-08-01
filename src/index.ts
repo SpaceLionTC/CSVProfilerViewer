@@ -235,9 +235,15 @@ async function run()
     }
 
     if (csvString.length>0) {
-        // Second to last row has the correct headers.
         let preprocessedString = csvString.split('\n');
-        preprocessedString[0] = preprocessedString[preprocessedString.length - 2];
+        // Second to last row has the correct headers in this case.
+        if (preprocessedString[preprocessedString.length - 1].startsWith("[HasHeaderRowAtEnd]"))
+        {
+            preprocessedString[0] = preprocessedString[preprocessedString.length - 2];
+        }
+        else {
+            document.body.appendChild(HTML.tag("div", {}, "WARNING : Final headers were not written, make sure traces end gracefully by not shutting down the process prematurely to prevent data loss."))
+        }
 
         let table: ParseResult<{ [key: string]: string }> = parse(preprocessedString.join('\n'), {header:true});
         let frameTimeSeries : number[] = [];
