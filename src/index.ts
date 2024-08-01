@@ -89,7 +89,7 @@ let aggregateStats = [
     },
     {
         displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Skeletal Mesh",
-        addLabels: ["SkinnedMeshComponent/GameThread/Tick", "Exclusive/GameThread/Animation"],
+        addLabels: ["Exclusive/GameThread/Animation"],
         subtractLabels: []
     },
     {
@@ -306,7 +306,14 @@ async function run()
         }
 
         aggregateStatValues.forEach((value: number[] , key: string ) => {
-            document.body.appendChild(HTML.tag("div", {}, key + " - Avg : " + ( value.reduce((a, b) => a + b) / value.length).toFixed(2) + "ms, Max : " + (Math.max(...value)).toFixed(2) + "ms"))
+            value = value.sort((a,b) => a-b);
+            let median = value[Math.floor(value.length / 2)].toFixed(2);
+            let avg = (value.reduce((a, b) => a + b) / value.length).toFixed(2);
+            let percentile2 = value[Math.floor(value.length * 0.02)].toFixed(2);
+            let percentile98 = value[Math.floor(value.length * 0.98)].toFixed(2);
+            let max = value[value.length - 1].toFixed(2);
+
+            document.body.appendChild(HTML.tag("div", {}, `${key} - (2% : ${percentile2}ms, Avg : ${avg}ms, Med : ${median}ms, 98% : ${percentile98}ms, Max : ${max}ms)`))
         });
 
 
