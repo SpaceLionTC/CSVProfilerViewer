@@ -49,7 +49,7 @@ let aggregateStats = [
     },
     {
         displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Spawning",
-        addLabels: ["Exclusive/GameThread/ActorSpawning"],
+        addLabels: ["GameThread/ActorSpawning"],
         subtractLabels: []
     }, 
     {
@@ -94,13 +94,13 @@ let aggregateStats = [
     },
     {
         displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Character Movement",
-        addLabels : ["Exclusive/GameThread/CharacterMovement"],
+        addLabels : ["CharacterMovement/GameThread/Tick"],
         subtractLabels: []
     },
     {
         displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Game Tick Time Misc",
         addLabels : ["GameThread/GameTickTime"],
-        subtractLabels: ["LokiHeroCharacter/GameThread/ALokiHeroCharacterTick", "VisionGranter/GameThread/Tick", "LokiProjectile/GameThread/MovementComponentTick", "Exclusive/GameThread/Effects", "SkinnedMeshComponent/GameThread/Tick", "Exclusive/GameThread/Animation", "Exclusive/GameThread/CharacterMovement"],
+        subtractLabels: ["LokiHeroCharacter/GameThread/ALokiHeroCharacterTick", "VisionGranter/GameThread/Tick", "LokiProjectile/GameThread/MovementComponentTick", "Exclusive/GameThread/Effects", "Exclusive/GameThread/Animation", "CharacterMovement/GameThread/CharacterMovement"],
     },
     {
         displayName: "\xa0\xa0\xa0\xa0Garbage Collection",
