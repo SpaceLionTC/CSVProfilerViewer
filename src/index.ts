@@ -36,43 +36,97 @@ import axios, {AxiosResponse} from "axios";
 
 const  MAX_FRAMES_TO_PROCESS: number = 60 * 3600;
 
-let interestingStats = [
-    {
-        displayName: "VFX",
-        csvName: "Exclusive/GameThread/Effects",
-    },
-    {
-        displayName: "Audio",
-        csvName: "AkComponent/GameThread/Tick",
-    },
-    {
-        displayName: "VisionGranters",
-        csvName: "VisionGranter/GameThread/Tick"
-    },
+let aggregateStats = [
     {
         displayName: "Net Tick Time",
-        csvName: "GameThread/NetTickTime"
+        addLabels: ["GameThread/NetTickTime"],
+        subtractLabels: []
     },
     {
-        displayName: "Spawning",
-        csvName: "Exclusive/GameThread/ActorSpawning"
+        displayName: "\xa0\xa0\xa0\xa0Spawning",
+        addLabels: ["Exclusive/GameThread/ActorSpawning"],
+        subtractLabels: []
     }, 
     {
-        displayName: "Hero Characters",
-        csvName : "LokiHeroCharacter/GameThread/ALokiHeroCharacterTick"
+        displayName: "\xa0\xa0\xa0\xa0Net Tick Time Misc",
+        addLabels: ["GameThread/NetTickTime"],
+        subtractLabels: ["Exclusive/GameThread/ActorSpawning"]
+    }, 
+    {
+        displayName: "Async Loading",
+        addLabels: ["GameThread/ProcessAsyncLoading"],
+        subtractLabels: []
     },
     {
-        displayName: "Skeletal Mesh Tick",
-        csvName : "SkinnedMeshComponent/GameThread/Tick"
+        displayName: "Game Tick Time",
+        addLabels: ["GameThread/GameTickTime"],
+        subtractLabels: []
+    }, 
+    {
+        displayName: "\xa0\xa0\xa0\xa0Hero Characters",
+        addLabels: ["LokiHeroCharacter/GameThread/ALokiHeroCharacterTick"],
+        subtractLabels: []
     },
     {
-        displayName: "Skeletal Mesh Animation",
-        csvName : "Exclusive/GameThread/Animation"
+        displayName: "\xa0\xa0\xa0\xa0VisionGranters",
+        addLabels: ["VisionGranter/GameThread/Tick"],
+        subtractLabels: []
     },
     {
-        displayName: "Character Movement",
-        csvName : "Exclusive/GameThread/CharacterMovement" 
+        displayName: "\xa0\xa0\xa0\xa0Projectiles",
+        addLabels: ["LokiProjectile/GameThread/MovementComponentTick"],
+        subtractLabels: []
     },
+    {
+        displayName: "\xa0\xa0\xa0\xa0VFX",
+        addLabels: ["Exclusive/GameThread/Effects"],
+        subtractLabels: []
+    },
+    {
+        displayName: "\xa0\xa0\xa0\xa0Skeletal Mesh",
+        addLabels: ["SkinnedMeshComponent/GameThread/Tick", "Exclusive/GameThread/Animation"],
+        subtractLabels: []
+    },
+    {
+        displayName: "\xa0\xa0\xa0\xa0Character Movement",
+        addLabels : ["Exclusive/GameThread/CharacterMovement"],
+        subtractLabels: []
+    },
+    {
+        displayName: "\xa0\xa0\xa0\xa0Game Tick Time Misc",
+        addLabels : ["GameThread/GameTickTime"],
+        subtractLabels: ["LokiHeroCharacter/GameThread/ALokiHeroCharacterTick", "VisionGranter/GameThread/Tick", "LokiProjectile/GameThread/MovementComponentTick", "Exclusive/GameThread/Effects", "SkinnedMeshComponent/GameThread/Tick", "Exclusive/GameThread/Animation", "Exclusive/GameThread/CharacterMovement"],
+    },
+    {
+        displayName: "Garbage Collection",
+        addLabels: ["GameThread/ConditionalCollectGarbage"],
+        subtractLabels: []
+    },
+    {
+        displayName: "Redraw Viewports",
+        addLabels: ["GameThread/RedrawViewports"],
+        subtractLabels: []
+    },
+    {
+        displayName: "\xa0\xa0\xa0\xa0Level Streaming",
+        addLabels : ["GameThread/UpdateLevelStreaming"],
+        subtractLabels: []
+    },
+    {
+        displayName: "\xa0\xa0\xa0\xa0Redraw Viewports Misc",
+        addLabels: ["GameThread/RedrawViewports"],
+        subtractLabels: ["GameThread/UpdateLevelStreaming"]
+    }, 
+    {
+        displayName: "Slate Tick",
+        addLabels: ["Slate/GameThread/Tick"],
+        subtractLabels: []
+    }
+    {
+        displayName: "Misc",
+        addLabels: ["FrameTime"],
+        subtractLabels: ["GameThread/NetTickTime", "GameThread/ProcessAsyncLoading", "GameThread/GameTickTime", "GameThread/ConditionalCollectGarbage", "GameThread/RedrawViewports", "Slate/GameThread/Tick"]
+    }
 ]
 
 let tabs = [{
@@ -138,8 +192,6 @@ topRowElement.appendChild(mainChartElement);
 topRowElement.appendChild(frametimeElement);
 document.body.appendChild(topRowElement);
 
-document.body.appendChild(HTML.tag("div", {}, "Click on one measurement in the graph and then another to compare them in the tabs below. Use scroll wheel to zoom."));
-
 
 let tabsDiv = HTML.tag("div", {}, "");
 let miniMap = HTML.tag("mini-map", {}, "");
@@ -185,7 +237,7 @@ async function run()
         let perFrameKBTimeSeries : number[] = [];
         let renderThreadTimeSeries : number[] = [];
         let frameNumberLabels : number[] = [];
-        let interestingStatsValues : Map<string, number[]> = new Map<string, number[]>();
+        let aggregateStatValues : Map<string, number[]> = new Map<string, number[]>();
 
         for (let frameNumber = 0; frameNumber<Math.min(MAX_FRAMES_TO_PROCESS,table.data.length); ++frameNumber) {
             frameTimeSeries.push(Number.parseFloat(table.data[frameNumber]["FrameTime"]));
@@ -193,19 +245,39 @@ async function run()
             renderThreadTimeSeries.push(Number.parseFloat(table.data[frameNumber]["RenderThreadTime"]));
             perFrameKBTimeSeries.push(Number.parseFloat(table.data[frameNumber]["FileIO/PerFrameKB"]));
         
-            interestingStats.forEach( (interestingStat) => {
-                let value : number = Number.parseFloat(table.data[frameNumber][interestingStat.csvName]);
-                if (!isNaN(value))
+            aggregateStats.forEach( (aggregateStat) => {
+                let hasValidAggregate = false;
+                let aggregateValue = 0.0;
+
+                aggregateStat.addLabels.forEach((label) =>
                 {
-                    if (!interestingStatsValues.has(interestingStat.displayName))
+                    let value : number = Number.parseFloat(table.data[frameNumber][label]);
+                    if (!isNaN(value))
+                    {
+                        aggregateValue += value;
+                        hasValidAggregate = true;
+                    }
+                });
+
+                aggregateStat.subtractLabels.forEach((label) =>
+                {
+                    let value : number = Number.parseFloat(table.data[frameNumber][label]);
+                    if (!isNaN(value))
+                    {
+                        aggregateValue -= value;
+                    }
+                });
+
+                if (hasValidAggregate)
+                {
+                    if (!aggregateStatValues.has(aggregateStat.displayName))
                     {
                         let newArray: number[] = [];
-                        interestingStatsValues.set(interestingStat.displayName, newArray);
+                        aggregateStatValues.set(aggregateStat.displayName, newArray);
                     }
 
-                    interestingStatsValues.get(interestingStat.displayName)!.push(value);
+                    aggregateStatValues.get(aggregateStat.displayName)!.push(aggregateValue);
                 }
-
             })
 
             let chaosTime : number = 0;
@@ -218,8 +290,8 @@ async function run()
             frameNumberLabels.push(frameNumber);
         }
 
-        interestingStatsValues.forEach((value: number[] , key: string ) => {
-            document.body.appendChild(HTML.tag("div", {}, key + "- Max(" + (Math.max(...value)) + ") Avg(" + ( value.reduce((a, b) => a + b) / value.length) + ")"))
+        aggregateStatValues.forEach((value: number[] , key: string ) => {
+            document.body.appendChild(HTML.tag("div", {}, key + " - Avg : " + ( value.reduce((a, b) => a + b) / value.length).toFixed(2) + "ms, Max : " + (Math.max(...value)).toFixed(2) + "ms"))
         });
 
 
