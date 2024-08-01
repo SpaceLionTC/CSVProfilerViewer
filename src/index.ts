@@ -55,7 +55,7 @@ let aggregateStats = [
     {
         displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Net Tick Time Misc",
         addLabels: ["GameThread/NetTickTime"],
-        subtractLabels: ["Exclusive/GameThread/ActorSpawning"]
+        subtractLabels: ["GameThread/ActorSpawning"]
     }, 
     {
         displayName: "\xa0\xa0\xa0\xa0Async Loading",
