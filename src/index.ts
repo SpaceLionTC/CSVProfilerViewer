@@ -38,7 +38,7 @@ const  MAX_FRAMES_TO_PROCESS: number = 60 * 3600;
 
 let aggregateStats = [
     {
-        displayName: "FrameTime",
+        displayName: "Frame Time",
         addLabels: ["FrameTime"],
         subtractLabels: []
     },
@@ -235,7 +235,11 @@ async function run()
     }
 
     if (csvString.length>0) {
-        let table: ParseResult<{ [key: string]: string }> = parse(csvString, {header:true});
+        // Second to last row has the correct headers.
+        let preprocessedString = csvString.split('\n');
+        preprocessedString[0] = preprocessedString[preprocessedString.length - 2];
+
+        let table: ParseResult<{ [key: string]: string }> = parse(preprocessedString.join('\n'), {header:true});
         let frameTimeSeries : number[] = [];
         let gameThreadTimeSeries : number[] = [];
         let chaosTimeSeries : number[] = [];
