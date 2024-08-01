@@ -38,92 +38,97 @@ const  MAX_FRAMES_TO_PROCESS: number = 60 * 3600;
 
 let aggregateStats = [
     {
-        displayName: "Net Tick Time",
+        displayName: "FrameTime",
+        addLabels: ["FrameTime"],
+        subtractLabels: []
+    },
+    {
+        displayName: "\xa0\xa0\xa0\xa0Net Tick Time",
         addLabels: ["GameThread/NetTickTime"],
         subtractLabels: []
     },
     {
-        displayName: "\xa0\xa0\xa0\xa0Spawning",
+        displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Spawning",
         addLabels: ["Exclusive/GameThread/ActorSpawning"],
         subtractLabels: []
     }, 
     {
-        displayName: "\xa0\xa0\xa0\xa0Net Tick Time Misc",
+        displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Net Tick Time Misc",
         addLabels: ["GameThread/NetTickTime"],
         subtractLabels: ["Exclusive/GameThread/ActorSpawning"]
     }, 
     {
-        displayName: "Async Loading",
+        displayName: "\xa0\xa0\xa0\xa0Async Loading",
         addLabels: ["GameThread/ProcessAsyncLoading"],
         subtractLabels: []
     },
     {
-        displayName: "Game Tick Time",
+        displayName: "\xa0\xa0\xa0\xa0Game Tick Time",
         addLabels: ["GameThread/GameTickTime"],
         subtractLabels: []
     }, 
     {
-        displayName: "\xa0\xa0\xa0\xa0Hero Characters",
+        displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Hero Characters",
         addLabels: ["LokiHeroCharacter/GameThread/ALokiHeroCharacterTick"],
         subtractLabels: []
     },
     {
-        displayName: "\xa0\xa0\xa0\xa0VisionGranters",
+        displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0VisionGranters",
         addLabels: ["VisionGranter/GameThread/Tick"],
         subtractLabels: []
     },
     {
-        displayName: "\xa0\xa0\xa0\xa0Projectiles",
+        displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Projectiles",
         addLabels: ["LokiProjectile/GameThread/MovementComponentTick"],
         subtractLabels: []
     },
     {
-        displayName: "\xa0\xa0\xa0\xa0VFX",
+        displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0VFX",
         addLabels: ["Exclusive/GameThread/Effects"],
         subtractLabels: []
     },
     {
-        displayName: "\xa0\xa0\xa0\xa0Skeletal Mesh",
+        displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Skeletal Mesh",
         addLabels: ["SkinnedMeshComponent/GameThread/Tick", "Exclusive/GameThread/Animation"],
         subtractLabels: []
     },
     {
-        displayName: "\xa0\xa0\xa0\xa0Character Movement",
+        displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Character Movement",
         addLabels : ["Exclusive/GameThread/CharacterMovement"],
         subtractLabels: []
     },
     {
-        displayName: "\xa0\xa0\xa0\xa0Game Tick Time Misc",
+        displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Game Tick Time Misc",
         addLabels : ["GameThread/GameTickTime"],
         subtractLabels: ["LokiHeroCharacter/GameThread/ALokiHeroCharacterTick", "VisionGranter/GameThread/Tick", "LokiProjectile/GameThread/MovementComponentTick", "Exclusive/GameThread/Effects", "SkinnedMeshComponent/GameThread/Tick", "Exclusive/GameThread/Animation", "Exclusive/GameThread/CharacterMovement"],
     },
     {
-        displayName: "Garbage Collection",
+        displayName: "\xa0\xa0\xa0\xa0Garbage Collection",
         addLabels: ["GameThread/ConditionalCollectGarbage"],
         subtractLabels: []
     },
     {
-        displayName: "Redraw Viewports",
+        displayName: "\xa0\xa0\xa0\xa0Redraw Viewports",
         addLabels: ["GameThread/RedrawViewports"],
         subtractLabels: []
     },
     {
-        displayName: "\xa0\xa0\xa0\xa0Level Streaming",
+        displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Level Streaming",
         addLabels : ["GameThread/UpdateLevelStreaming"],
         subtractLabels: []
     },
     {
-        displayName: "\xa0\xa0\xa0\xa0Redraw Viewports Misc",
+        displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Redraw Viewports Misc",
         addLabels: ["GameThread/RedrawViewports"],
         subtractLabels: ["GameThread/UpdateLevelStreaming"]
     }, 
     {
-        displayName: "Slate Tick",
+        displayName: "\xa0\xa0\xa0\xa0Slate Tick",
         addLabels: ["Slate/GameThread/Tick"],
         subtractLabels: []
-    }
+    },
     {
-        displayName: "Misc",
+        displayName: "\xa0\xa0\xa0\xa0Misc",
         addLabels: ["FrameTime"],
         subtractLabels: ["GameThread/NetTickTime", "GameThread/ProcessAsyncLoading", "GameThread/GameTickTime", "GameThread/ConditionalCollectGarbage", "GameThread/RedrawViewports", "Slate/GameThread/Tick"]
     }
