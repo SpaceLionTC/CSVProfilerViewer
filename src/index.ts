@@ -240,6 +240,8 @@ async function run()
         if (preprocessedString[preprocessedString.length - 1].startsWith("[HasHeaderRowAtEnd]"))
         {
             preprocessedString[0] = preprocessedString[preprocessedString.length - 2];
+            preprocessedString.pop();
+            preprocessedString.pop();
         }
         else {
             document.body.appendChild(HTML.tag("div", {}, "WARNING : Final headers were not written, make sure traces end gracefully by not shutting down the process prematurely to prevent data loss."))
@@ -267,7 +269,7 @@ async function run()
                 aggregateStat.addLabels.forEach((label) =>
                 {
                     let value : number = Number.parseFloat(table.data[frameNumber][label]);
-                    if (!isNaN(value))
+                    if (!isNaN(value) && value >= 0.0)
                     {
                         aggregateValue += value;
                         hasValidAggregate = true;
