@@ -64,7 +64,7 @@ let aggregateStats = [
     },
     {
         displayName: "\xa0\xa0\xa0\xa0Game Tick Time",
-        addLabels: ["GameThread/GameTickTime"],
+        addLabels: ["GameThread/GameEngineTick"],
         subtractLabels: []
     }, 
     {
@@ -99,8 +99,8 @@ let aggregateStats = [
     },
     {
         displayName: "\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0Game Tick Time Misc",
-        addLabels : ["GameThread/GameTickTime"],
-        subtractLabels: ["LokiHeroCharacter/GameThread/ALokiHeroCharacterTick", "VisionGranter/GameThread/Tick", "LokiProjectile/GameThread/MovementComponentTick", "Exclusive/GameThread/Effects", "Exclusive/GameThread/Animation", "CharacterMovement/GameThread/CharacterMovement"],
+        addLabels : ["GameThread/GameEngineTick"],
+        subtractLabels: ["LokiHeroCharacter/GameThread/ALokiHeroCharacterTick", "VisionGranter/GameThread/Tick", "LokiProjectile/GameThread/MovementComponentTick", "Exclusive/GameThread/Effects", "Exclusive/GameThread/Animation", "CharacterMovement/GameThread/Tick"],
     },
     {
         displayName: "\xa0\xa0\xa0\xa0Garbage Collection",
@@ -130,7 +130,7 @@ let aggregateStats = [
     {
         displayName: "\xa0\xa0\xa0\xa0Misc",
         addLabels: ["FrameTime"],
-        subtractLabels: ["GameThread/NetTickTime", "GameThread/ProcessAsyncLoading", "GameThread/GameTickTime", "GameThread/ConditionalCollectGarbage", "GameThread/RedrawViewports", "Slate/GameThread/Tick"]
+        subtractLabels: ["GameThread/NetTickTime", "GameThread/ProcessAsyncLoading", "GameThread/GameEngineTick", "GameThread/ConditionalCollectGarbage", "GameThread/RedrawViewports", "Slate/GameThread/Tick"]
     }
 ]
 
@@ -255,6 +255,7 @@ async function run()
         let renderThreadTimeSeries : number[] = [];
         let frameNumberLabels : number[] = [];
         let aggregateStatValues : Map<string, number[]> = new Map<string, number[]>();
+        let aggregateStatHadNegativeValue : boolean = false;
 
         aggregateStats.forEach( (aggregateStat) => {
                 let newArray: number[] = [];
@@ -292,7 +293,31 @@ async function run()
 
                 if (hasValidAggregate)
                 {
-                    aggregateStatValues.get(aggregateStat.displayName)!.push(aggregateValue);
+                    if (aggregateValue < 0.0)
+                    {
+                        aggregateStatHadNegativeValue = true;
+
+                        console.log(`FrameNumber : ${frameNumber} DisplayName : ${aggregateStat.displayName}`);
+                        aggregateStat.addLabels.forEach((label) =>
+                            {
+                                let value : number = Number.parseFloat(table.data[frameNumber][label]);
+                                if (!isNaN(value) && value >= 0.0)
+                                {
+                                    console.log(`AddValue : ${value}`);
+                                }
+                            });
+            
+                            aggregateStat.subtractLabels.forEach((label) =>
+                            {
+                                let value : number = Number.parseFloat(table.data[frameNumber][label]);
+                                if (!isNaN(value))
+                                {
+                                    console.log(`SubtractValue : ${value}`);
+                                }
+                            });
+                        
+                    }
+                    aggregateStatValues.get(aggregateStat.displayName)!.push(Math.max(0.0, aggregateValue));
                 }
             })
 
@@ -304,6 +329,11 @@ async function run()
             });
             chaosTimeSeries.push(chaosTime);
             frameNumberLabels.push(frameNumber);
+        }
+
+        if (aggregateStatHadNegativeValue)
+        {
+            document.body.appendChild(HTML.tag("div", {}, `*Found frames with negative aggregate values. Please review log before accepting results as accurate.*`))
         }
 
         aggregateStatValues.forEach((value: number[] , key: string ) => {
