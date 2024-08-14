@@ -350,7 +350,7 @@ async function run()
             }
             else
             {
-                document.body.appendChild(HTML.tag("div", {}, `WARNING : ${key} had no values`))
+                document.body.appendChild(HTML.tag("div", {}, `${key} : WARNING label no values`))
             }
         });
 
