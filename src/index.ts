@@ -331,20 +331,28 @@ async function run()
             frameNumberLabels.push(frameNumber);
         }
 
+        
         if (aggregateStatHadNegativeValue)
         {
             document.body.appendChild(HTML.tag("div", {}, `*Found frames with negative aggregate values. Please review log before accepting results as accurate.*`))
         }
-
         aggregateStatValues.forEach((value: number[] , key: string ) => {
-            value = value.sort((a,b) => a-b);
-            let median = value[Math.floor(value.length / 2)].toFixed(2);
-            let avg = (value.reduce((a, b) => a + b) / value.length).toFixed(2);
-            let percentile2 = value[Math.floor(value.length * 0.02)].toFixed(2);
-            let percentile98 = value[Math.floor(value.length * 0.98)].toFixed(2);
-            let max = value[value.length - 1].toFixed(2);
+            if (value.length > 0)
+            {
+                value = value.sort((a,b) => a-b);
+                let median = value[Math.floor(value.length / 2)].toFixed(2);
+                let avg = (value.reduce((a, b) => a + b) / value.length).toFixed(2);
+                let percentile2 = value[Math.floor(value.length * 0.02)].toFixed(2);
+                let percentile98 = value[Math.floor(value.length * 0.98)].toFixed(2);
+                let max = value[value.length - 1].toFixed(2);
 
-            document.body.appendChild(HTML.tag("div", {}, `${key} - (2% : ${percentile2}ms, Avg : ${avg}ms, Med : ${median}ms, 98% : ${percentile98}ms, Max : ${max}ms)`))
+                document.body.appendChild(HTML.tag("div", {}, `${key} - (2% : ${percentile2}ms, Avg : ${avg}ms, Med : ${median}ms, 98% : ${percentile98}ms, Max : ${max}ms)`))
+            }
+            else
+            {
+                document.body.appendChild(HTML.tag("div", {}, `WARNING : ${key} had no values`))
+            }
+            
         });
 
 
