@@ -34,12 +34,12 @@ import {MiniMapElement} from "./MiniMapElement";
 import {HTML} from "./HTML";
 import axios, {AxiosResponse} from "axios";
 
-const  MAX_FRAMES_TO_PROCESS: number = 60 * 3600;
+const  MAX_FRAMES_TO_PROCESS: number = 2147483647;
 
 let aggregateStats = [
     {
         displayName: "Frame Time",
-        addLabels: ["FrameTime"],
+        addLabels: ["GameThread/FEngineLoopTick"],
         subtractLabels: [],
     },
     {
@@ -129,7 +129,7 @@ let aggregateStats = [
     },
     {
         displayName: "\xa0\xa0\xa0\xa0Misc",
-        addLabels: ["FrameTime"],
+        addLabels: ["GameThread/FEngineLoopTick"],
         subtractLabels: ["GameThread/NetTickTime", "GameThread/ProcessAsyncLoading", "GameThread/GameEngineTick", "GameThread/ConditionalCollectGarbage", "GameThread/RedrawViewports", "Slate/GameThread/Tick"]
     }
 ]
